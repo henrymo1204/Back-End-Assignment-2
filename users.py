@@ -21,6 +21,24 @@ app.install(plugin)
 logging.config.fileConfig(app.config['logging.config'])
 
 
+def json_error_handler(res):
+    if res.content_type == 'application/json':
+          return res.body
+    res.content_type = 'application/json'
+    if res.body == 'Unknown Error.':
+          res.body = bottle.HTTP_CODES[res.status_code]
+    return bottle.json_dumps({'errors': res.body})
+    
+
+app.default_error_handler = json_error_handler
+
+
+if not sys.warnoptions:
+    import warnings
+    for warning in [DeprecationWarning, ResourceWarning]:
+          warnings.simplefilter('ignore', warning)
+          
+
 def query(db, sql, args=(), one=False):
     cur = db.execute(sql, args)
     rv = [dict((cur.description[idx][0], value)
