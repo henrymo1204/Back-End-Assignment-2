@@ -37,6 +37,11 @@ def execute(db, sql, args=()):
     return id
 
 
+@get('/users/')
+def getAll(db):
+    return query(db, 'SELECT * FROM users')
+
+
 @post('/users')
 def create_user(db):
     user = request.json
