@@ -7,7 +7,6 @@ import bottle
 import bottle_sqlite
 from bottle import get, post, delete, error, abort, request, response, HTTPResponse
 
-conn = sqlite3.connect('./var/users.db')
 # conn.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, username string UNIQUE NOT NULL, password string NOT NULL, emailAddress string UNIQUE NOT NULL)")
 # conn.execute("CREATE TABLE followers (id INTEGER PRIMARY KEY, username string NOT NULL, usernameToFollow string NOT NULL)")
 
@@ -95,5 +94,3 @@ def removeFollower(db, username, usernameToRemove):
     # add exception later
 
     response.status = 200
-
-print(query(conn, 'SELECT * FROM users'))
