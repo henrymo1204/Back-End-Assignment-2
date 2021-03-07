@@ -7,7 +7,8 @@ import bottle
 import bottle_sqlite
 from bottle import get, post, delete, error, abort, request, response, HTTPResponse
 
-# conn.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, username string UNIQUE NOT NULL, password string NOT NULL, emailAddress string UNIQUE NOT NULL)")
+# conn = sqlite3.connect('users.db')
+# conn.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, username string UNIQUE NOT NULL, password string NOT NULL, emailAddress string UNIQUE)")
 # conn.execute("CREATE TABLE followers (id INTEGER PRIMARY KEY, username string NOT NULL, usernameToFollow string NOT NULL)")
 
 app = bottle.default_app()
