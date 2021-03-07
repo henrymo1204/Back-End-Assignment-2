@@ -66,7 +66,7 @@ def create_user(db):
 
     response.status = 201
     response.set_header('Location', f"/users/{user['id']}")
-    return True
+    return user
 
 
 @post('/users/<username>/<password>')
