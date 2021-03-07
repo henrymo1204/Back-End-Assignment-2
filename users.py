@@ -39,7 +39,8 @@ def execute(db, sql, args=()):
 
 @get('/users/')
 def getAll(db):
-    return query(db, 'SELECT * FROM users')
+    users = query(db, 'SELECT * FROM users')
+    return {'users': users}
 
 
 @post('/users')
