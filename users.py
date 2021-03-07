@@ -7,9 +7,10 @@ import bottle
 import bottle_sqlite
 from bottle import get, post, delete, error, abort, request, response, HTTPResponse
 
+
 # conn = sqlite3.connect('users.db')
 # conn.execute("CREATE TABLE users (id INTEGER PRIMARY KEY, username string UNIQUE NOT NULL, password string NOT NULL, emailAddress string UNIQUE)")
-# conn.execute("CREATE TABLE followers (id INTEGER PRIMARY KEY, username string NOT NULL, usernameToFollow string NOT NULL)")
+# conn.execute("CREATE TABLE followers (id INTEGER PRIMARY KEY, user_id string NOT NULL, user_idToFollow string NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id), FOREIGN KEY(user_idTOFOllow) REFERENCES users(id))")
 
 app = bottle.default_app()
 app.config.load_config('./etc/api.ini')
@@ -39,10 +40,15 @@ def execute(db, sql, args=()):
 
 
 @get('/users/')
-def getAll(db):
+def getUsers(db):
     users = query(db, 'SELECT * FROM users')
     return {'users': users}
-
+    
+    
+@get('/followers/')
+def getFollowers(db):
+    followers = query(db, 'SELECT * FROM followers')
+    return {'followers': followers}
 
 @post('/users')
 def create_user(db):
@@ -53,14 +59,13 @@ def create_user(db):
 
     posted_fields = user.keys()
     required_fields = {'username', 'password', 'emailAddress'}
-
+    
     if not required_fields <= posted_fields:
         abort(400, f'Missing fields: {required_fields - posted_fields}')
 
     try:
         user['id'] = execute(db,
-                             '''INSERT INTO users(username, password, emailAddress) VALUES (:username, :password, :emailAddress)''',
-                             user)
+                             '''INSERT INTO users(username, password, emailAddress) VALUES (:username, :password, :emailAddress)''', user)
 
     except sqlite3.IntegrityError as e:
         abort(409, str(e))
@@ -74,18 +79,17 @@ def create_user(db):
 def checkPassword(db, username, password):
     db_password = query(db, 'SELECT password FROM users WHERE username=?', [username])
     if db_password != [] and db_password[0]['password'] == password:
-        response.status = 200
-        return {'Authentication': True}
+    	response.status = 200
+    	return {'Authentication': True}
     else:
-        response.status = 401
-        return {'Authentication': False}
+    	response.status = 401
+    	return {'Authentication': False}
 
 
 @post('/users/<username>/<usernameToFollow')
 def addFollower(db, username, usernameToFollow):
     try:
-        execute(db,
-                '''INSERT INTO followers(username, usernameToFollow) VALUES (''' + username + ''', ''' + usernameToFollow + ''')''')
+        execute(db, '''INSERT INTO followers(username, usernameToFollow) VALUES (''' + username + ''', ''' + usernameToFollow + ''')''')
 
     except sqlite3.IntegrityError as e:
         abort(409, str(e))
@@ -95,8 +99,7 @@ def addFollower(db, username, usernameToFollow):
 
 @delete('/users/<username>/<usernameToDelete>')
 def removeFollower(db, username, usernameToRemove):
-    execute(db,
-            '''DELETE FROM followers WHERE username = ''' + username + ''' AND usernameToFollow =  ''' + usernameToRemove + ''')''')
+    execute(db, '''DELETE FROM followers WHERE username = ''' + username + ''' AND usernameToFollow =  ''' + usernameToRemove + ''')''')
     # add exception later
 
     response.status = 200
