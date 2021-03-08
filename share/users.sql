@@ -22,20 +22,18 @@ INSERT INTO users(username, password, emailAddress) VALUES('admin', 'admin', 'ad
 INSERT INTO users(username, password, emailAddress) VALUES('henry', 'henry', 'henry@gmail.com');
 INSERT INTO users(username, password, emailAddress) VALUES('calvin', 'calvin', 'calvin@gmail.com');
 INSERT INTO users(username, password, emailAddress) VALUES('tommy', 'tommy', 'tommy@gmail.com');
-INSERT INTO users(username, password, emailAddress) 
-VALUES('test', 'test', 'test@gmail.com');
+INSERT INTO users(username, password, emailAddress) VALUES('test', 'test', 'test@gmail.com');
 
-/*
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(1, 2)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(1, 3)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(1, 4)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(1, 5)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(2, 3)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(2, 4)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(3, 2)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(3, 4)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(4, 2)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(4, 3)
-INSERT INTO followers(user_id, user_id_to_follow) VALUES(5, 1)
-*/
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(1, 2);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(1, 3);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(1, 4);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(1, 5);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(2, 3);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(2, 4);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(3, 2);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(3, 4);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(4, 2);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(4, 3);
+INSERT INTO followers(user_id, user_id_to_follow) VALUES(5, 1);
+
 COMMIT;

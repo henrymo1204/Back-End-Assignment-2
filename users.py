@@ -123,13 +123,13 @@ def addFollower(db):
         abort(400)
 
     posted_fields = follower.keys()
-    required_fields = {'username', 'userToFollow'}
+    required_fields = {'user_id', 'user_id_to_follow'}
 
     if not required_fields <= posted_fields:
         abort(400, f'Missing fields: {required_fields - posted_fields}')
 
     try:
-        follower['id'] = execute(db, '''INSERT INTO followers(username, user_to_follow) VALUES (:username, :userToFollow)''', follower)
+        follower['id'] = execute(db, '''INSERT INTO followers(user_id, user_id_to_follow) VALUES (:user_id, :user_id_to_follow)''', follower)
 
     except sqlite3.IntegrityError as e:
         abort(409, str(e))
@@ -146,16 +146,16 @@ def removeFollower(db):
         abort(400)
 
     posted_fields = follower.keys()
-    required_fields = {'username', 'userToFollow'}
+    required_fields = {'user_id', 'user_id_to_remove'}
 
-    username = follower['username']
-    userToFollow = follower['userToFollow']
+    username = follower['user_id']
+    userToFollow = follower['user_id_to_remove']
 
     if not required_fields <= posted_fields:
         abort(400, f'Missing fields: {required_fields - posted_fields}')
 
     try:
-        execute(db, '''DELETE from followers where username=? and user_to_follow=?''', (username, userToFollow))
+        execute(db, '''DELETE from followers where user_id=? and user_id_to_follow=?''', (username, userToFollow))
         message = { 'Status' : '200 OK'}
     except sqlite3.IntegrityError as e:
         abort(409, str(e))
