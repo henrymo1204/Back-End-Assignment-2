@@ -28,7 +28,7 @@ def json_error_handler(res):
     if res.body == 'Unknown Error.':
           res.body = bottle.HTTP_CODES[res.status_code]
     return bottle.json_dumps({'errors': res.body})
-    
+
 
 app.default_error_handler = json_error_handler
 
@@ -37,7 +37,7 @@ if not sys.warnoptions:
     import warnings
     for warning in [DeprecationWarning, ResourceWarning]:
           warnings.simplefilter('ignore', warning)
-          
+
 
 def query(db, sql, args=(), one=False):
     cur = db.execute(sql, args)
@@ -61,8 +61,8 @@ def execute(db, sql, args=()):
 def getUsers(db):
     users = query(db, 'SELECT * FROM users')
     return {'users': users}
-    
-    
+
+
 @get('/followers/')
 def getFollowers(db):
     followers = query(db, 'SELECT * FROM followers')
@@ -78,13 +78,14 @@ def create_user(db):
 
     posted_fields = user.keys()
     required_fields = {'username', 'password', 'emailAddress'}
-    
+
     if not required_fields <= posted_fields:
         abort(400, f'Missing fields: {required_fields - posted_fields}')
 
     try:
         user['id'] = execute(db,
-                             '''INSERT INTO users(username, password, emailAddress) VALUES (:username, :password, :emailAddress)''', user)
+                             '''INSERT INTO users(username, password, emailAddress)
+                             VALUES (:username, :password, :emailAddress)''', user)
 
     except sqlite3.IntegrityError as e:
         abort(409, str(e))
@@ -96,16 +97,16 @@ def create_user(db):
 @post('/users/<username>/password')
 def checkPassword(db, username):
     password = request.json
-    
+
     if not password:
         abort(400)
-        
+
     posted_fields = password.keys()
     required_fields = {'password'}
-    
+
     if not required_fields <= posted_fields:
         abort(400, f'Missing fields: {required_fields - posted_fields}')
-    
+
     db_password = query(db, 'SELECT password FROM users WHERE username=?', [username])
     if db_password != [] and db_password[0]['password'] == password['password']:
     	response.status = 200
@@ -114,3 +115,49 @@ def checkPassword(db, username):
     	response.status = 401
     	return {'Authentication': False}
 
+
+@post('/followers')
+def addFollower(db):
+    follower = request.json
+    if not follower:
+        abort(400)
+
+    posted_fields = follower.keys()
+    required_fields = {'username', 'userToFollow'}
+
+    if not required_fields <= posted_fields:
+        abort(400, f'Missing fields: {required_fields - posted_fields}')
+
+    try:
+        follower['id'] = execute(db, '''INSERT INTO followers(username, user_to_follow) VALUES (:username, :userToFollow)''', follower)
+
+    except sqlite3.IntegrityError as e:
+        abort(409, str(e))
+
+    response.status = 201
+    return follower
+
+
+@delete('/followers')
+def removeFollower(db):
+    follower = request.json
+
+    if not follower:
+        abort(400)
+
+    posted_fields = follower.keys()
+    required_fields = {'username', 'userToFollow'}
+
+    username = follower['username']
+    userToFollow = follower['userToFollow']
+
+    if not required_fields <= posted_fields:
+        abort(400, f'Missing fields: {required_fields - posted_fields}')
+
+    try:
+        execute(db, '''DELETE from followers where username=? and user_to_follow=?''', (username, userToFollow))
+        message = { 'Status' : '200 OK'}
+    except sqlite3.IntegrityError as e:
+        abort(409, str(e))
+
+    return message
