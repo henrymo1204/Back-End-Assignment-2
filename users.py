@@ -90,14 +90,24 @@ def create_user(db):
         abort(409, str(e))
 
     response.status = 201
-    response.set_header('Location', f"/users/{user['username']}/{user['password']}")
     return user
 
 
-@post('/users/<username>/<password>')
-def checkPassword(db, username, password):
+@post('/users/<username>/password')
+def checkPassword(db, username):
+    password = request.json
+    
+    if not password:
+        abort(400)
+        
+    posted_fields = password.keys()
+    required_fields = {'password'}
+    
+    if not required_fields <= posted_fields:
+        abort(400, f'Missing fields: {required_fields - posted_fields}')
+    
     db_password = query(db, 'SELECT password FROM users WHERE username=?', [username])
-    if db_password != [] and db_password[0]['password'] == password:
+    if db_password != [] and db_password[0]['password'] == password['password']:
     	response.status = 200
     	return {'Authentication': True}
     else:
