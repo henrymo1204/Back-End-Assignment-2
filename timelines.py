@@ -81,3 +81,24 @@ def postTweet(db):
     response.status = 201
     post['time'] = now
     return post
+    
+    
+# Returns recent posts from all users that this user follows.    
+@get('/followers/<username>/')
+def getHomeTimeLine(db, username): 
+    posts = query(db, '''SELECT posts.* FROM posts LEFT JOIN followers ON followers.usernameToFollow = posts.username WHERE followers.username = ? ORDER BY posts.time DESC LIMIT 25''', [username])
+    return {username: posts}
+    
+    
+# Returns recent posts from all users.
+@get('/posts/')
+def getPublicTimeLine(db): 
+    pass
+    
+    
+    
+# Returns recent posts from a user.
+@get('/posts/<username>')
+def getUserTimeLine(db, username):
+    pass
+
