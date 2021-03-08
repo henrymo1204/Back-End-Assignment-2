@@ -13,7 +13,7 @@ from bottle import get, post, delete, error, abort, request, response, HTTPRespo
 # conn.execute("CREATE TABLE followers (id INTEGER PRIMARY KEY, user_id string NOT NULL, user_idToFollow string NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id), FOREIGN KEY(user_idTOFOllow) REFERENCES users(id))")
 
 app = bottle.default_app()
-app.config.load_config('./etc/api.ini')
+app.config.load_config('./etc/users.ini')
 
 plugin = bottle_sqlite.Plugin(app.config['sqlite.users'])
 app.install(plugin)

@@ -7,14 +7,11 @@ import bottle
 import bottle_sqlite
 from bottle import get, post, delete, error, abort, request, response, HTTPResponse
 
-import users
+import time
 
-
-conn = sqlite3.connect('timelines.db')
-conn.execute("CREATE TABLE posts(id INTEGER PRIMARY KEY, user_id NOT NULL)")
 
 app = bottle.default_app()
-app.config.load_config('./etc/api.ini')
+app.config.load_config('./etc/timelines.ini')
 
 plugin = bottle_sqlite.Plugin(app.config['sqlite.timelines'])
 app.install(plugin)
@@ -59,7 +56,7 @@ def execute(db, sql, args=()):
     
     
 @post('/posts')
-def postTweet(username, text):
+def postTweet(db):
     post = request.json
 
     if not post:
@@ -71,15 +68,16 @@ def postTweet(username, text):
     if not required_fields <= posted_fields:
         abort(400, f'Missing fields: {required_fields - posted_fields}')
 
+    f = '%Y-%m-%d %H:%M:%S'
+    now = time.localtime()
+    now = time.strftime(f, now)
+    
     try:
-        user['id'] = execute(db,
-                             '''INSERT INTO users(username, password, emailAddress) VALUES (:username, :password, :emailAddress)''', user)
+        post['id'] = execute(db, '''INSERT INTO posts(username, text, time) VALUES (?, ?, ?)''', (post['username'], post['text'], now))
 
     except sqlite3.IntegrityError as e:
         abort(409, str(e))
 
     response.status = 201
-    response.set_header('Location', f"/users/{user['username']}/{user['password']}")
-    return user
-
-
+    post['time'] = now
+    return post
