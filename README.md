@@ -42,11 +42,13 @@ Returns true if the password parameter matches the password stored for the usern
 Route: POST /users/<username>/password
 
 JSON input: 
+
 {
 	password: password
 }
 
 JSON output:
+
 {
 	Authentication : True/False
 }
@@ -64,9 +66,12 @@ will return 201 created.
 
 Route: POST /followers/<username>/<usernameToFollow>
 
-JSON input: N/A
+JSON input: 
+
+None
 
 JSON output:
+
 {
 	“usernameToFollow”: usernameToFollow
 }
@@ -104,9 +109,12 @@ Stop following a user. The service will remove the usernameToRemove from the use
 
 Route: DELETE /followers/<username>/<usernameToRemove>
 
-JSON input: N/A
+JSON input: 
+
+None
 
 JSON output:
+
 {
 	status: 200 OK  
 	message: Successfully updated
@@ -139,7 +147,9 @@ Returns recent posts from a user. Should the user not exist in the database, the
 
 Route: GET /posts/<username>
 
-JSON input: None
+JSON input: 
+
+None
 
 JSON output:
 
@@ -158,7 +168,9 @@ Returns recent posts from all users. Similar to a twitter home page, this displa
 
 Route: GET /posts/
 
-JSON input: None
+JSON input: 
+
+None
 
 JSON output:
 
@@ -172,11 +184,18 @@ or
 	Status: 404 Not Found
 }
 
-getHomeTimeline(username)
-Returns recent posts from all users that this user follows. Returns a feed of posts from whom the user follows. If the user does not follow anyone or an error occurs when loading the user’s following list, the server will return a 404 error status.
+## getHomeTimeline(username)
+Returns recent posts from all users that this user follows. Returns a feed of posts from whom the user follows. If the user does not follow anyone or an error occurs when 
+loading the user’s following list, the server will return a 404 error status.
+
 Route: GET /followers/<username>/
-JSON input: None
+	
+JSON input: 
+
+None
+	
 JSON output:
+
 {
 	username: posts
 }
@@ -199,6 +218,7 @@ JSON input:
 }
 
 JSON output:
+
 {
 	username: username
 	text = text
