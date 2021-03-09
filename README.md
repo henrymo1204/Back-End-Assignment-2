@@ -10,6 +10,12 @@ foreman start
 
 RESOURCES: users
 
+# Basic Summary
+
+This program is social media post that allows a user to create an account and post tweet like messages. User is able to follow others and view their post as well as view a feed based on who they are following. Methods to remove followers and add followers function as intended. Methods searching for a specific user and viewing their recent posts is also functional. Each method is described below and give a general idea on how they function.
+
+Each method is in working order in its current state as of 3/9/21.
+
 ## createUser(username, email, password)
 
 Registers a new user account. Returns true if username is available, email address is valid, and password meets complexity requirements.
