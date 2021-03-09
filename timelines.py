@@ -87,6 +87,9 @@ def postTweet(db):
 @get('/followers/<username>/')
 def getHomeTimeLine(db, username): 
     posts = query(db, '''SELECT posts.* FROM posts LEFT JOIN followers ON followers.usernameToFollow = posts.username WHERE followers.username = ? ORDER BY posts.time DESC LIMIT 25''', [username])
+    if not posts:
+    	abort(404)
+    	
     return {username: posts}
     
     
@@ -96,6 +99,9 @@ def getPublicTimeLine(db):
     all_posts = query(db, '''SELECT * FROM posts 
     ORDER BY posts.time DESC 
     LIMIT 25''')
+    if not all_posts:
+    	abort(404)
+    	
     return {'posts': all_posts}
     
     
