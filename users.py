@@ -116,17 +116,10 @@ def checkPassword(db, username):
     	return {'Authentication': False}
 
 
-@post('/users/<username>/followers')
-def addFollower(db, username):
-    follower = request.json
-    if not follower:
-        abort(400)
-
-    posted_fields = follower.keys()
-    required_fields = {'userToFollow'}
-
+@post('/followers/<username>/<usernameToFollow>')
+def addFollower(db, username, usernameToFollow):
     user = username
-    userToFollow = follower['userToFollow']
+    userToFollow = usernameToFollow
     if  username == userToFollow:
         response.status = 400
         return { 'Status' : response.status, 'message' : 'Cannot follow self'}
@@ -154,17 +147,10 @@ def addFollower(db, username):
         response.status = 400
         return { 'Status' : response.status, 'message' : 'Already following'}
 
-@delete('/users/<username>/followers')
-def removeFollower(db, username):
-    follower = request.json
-    if not follower:
-        abort(400)
-
-    posted_fields = follower.keys()
-    required_fields = {'userToRemove'}
-
+@delete('/followers/<username>/<usernameToUnfollow>')
+def removeFollower(db, username, usernameToUnfollow):
     user = username
-    userToRemove = follower['userToRemove']
+    userToRemove = usernameToUnfollow
     if  username == userToRemove:
         response.status = 400
         return { 'Status' : response.status, 'message' : 'Cannot unfollow self'}
