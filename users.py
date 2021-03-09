@@ -116,48 +116,64 @@ def checkPassword(db, username):
     	return {'Authentication': False}
 
 
-@post('/followers')
-def addFollower(db):
+@post('/users/<username>/followers')
+def addFollower(db, username):
     follower = request.json
     if not follower:
         abort(400)
 
     posted_fields = follower.keys()
-    required_fields = {'user_id', 'user_id_to_follow'}
+    required_fields = {'userToFollow'}
+
+    user = username
+    userToFollow = follower['userToFollow']
+    if  username == userToFollow:
+        response.status = 400
+        return { 'Status' : response.status, 'message' : 'Cannot follow self'}
+    sql = "SELECT username, userToFollow FROM followers WHERE username=\'" + user + "\' and userToFollow=\'" + userToFollow + "\';"
+
+    c = db.execute(sql).fetchone()
+    if not c:
+        try:
+            execute(db, '''INSERT INTO followers(username, userToFollow) VALUES (?, ?)''', (user, userToFollow))
+            response.status = 201
+            return { 'userFollowed' : userToFollow}
+        except sqlite3.IntegrityError as e:
+            abort(409, str(e))
+
+    checkUser = c[0]
+    checkUserToFollow = c[1]
+
+    print(user, userToFollow)
+    print(checkUser, checkUserToFollow)
 
     if not required_fields <= posted_fields:
         abort(400, f'Missing fields: {required_fields - posted_fields}')
 
-    try:
-        follower['id'] = execute(db, '''INSERT INTO followers(user_id, user_id_to_follow) VALUES (:user_id, :user_id_to_follow)''', follower)
+    if(user == checkUser and userToFollow == checkUserToFollow):
+        response.status = 400
+        return { 'Status' : response.status, 'message' : 'Already following'}
 
-    except sqlite3.IntegrityError as e:
-        abort(409, str(e))
-
-    response.status = 201
-    return follower
-
-
-@delete('/followers')
-def removeFollower(db):
+@delete('/users/<username>/followers')
+def removeFollower(db, username):
     follower = request.json
-
     if not follower:
         abort(400)
 
     posted_fields = follower.keys()
-    required_fields = {'user_id', 'user_id_to_remove'}
+    required_fields = {'userToRemove'}
 
-    username = follower['user_id']
-    userToFollow = follower['user_id_to_remove']
-
-    if not required_fields <= posted_fields:
-        abort(400, f'Missing fields: {required_fields - posted_fields}')
-
-    try:
-        execute(db, '''DELETE from followers where user_id=? and user_id_to_follow=?''', (username, userToFollow))
-        message = { 'Status' : '200 OK'}
-    except sqlite3.IntegrityError as e:
-        abort(409, str(e))
-
-    return message
+    user = username
+    userToRemove = follower['userToRemove']
+    if  username == userToRemove:
+        response.status = 400
+        return { 'Status' : response.status, 'message' : 'Cannot unfollow self'}
+    sql = "SELECT username, userToFollow FROM followers WHERE username=\'" + user + "\' and userToFollow=\'" + userToRemove + "\';"
+    c = db.execute(sql).fetchone()
+    if not c:
+        response.status = 400
+        return { 'Status' : response.status, 'message' : 'User was never followed'}
+    else:
+        execute(db, '''DELETE from followers where username=? and userToFollow=?''', (username, userToRemove))
+        response.status = 200
+        return { 'Status' : response.status, 'message' : 'Successfully updated.'}
