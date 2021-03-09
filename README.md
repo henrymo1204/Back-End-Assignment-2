@@ -10,6 +10,7 @@ Registers a new user account. Returns true if username is available, email addre
 Route: POST /users
 
 JSON input: 
+
 {
 	username: username,
 	email: email,
@@ -17,6 +18,7 @@ JSON input:
 }
 
 JSON output:
+
 {
 	status: 201 Created
 }
