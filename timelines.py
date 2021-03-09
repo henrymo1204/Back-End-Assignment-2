@@ -93,12 +93,22 @@ def getHomeTimeLine(db, username):
 # Returns recent posts from all users.
 @get('/posts/')
 def getPublicTimeLine(db): 
-    pass
+    all_posts = query(db, '''SELECT * FROM posts 
+    ORDER BY posts.time DESC 
+    LIMIT 25''')
+    return {'posts': all_posts}
     
     
     
 # Returns recent posts from a user.
 @get('/posts/<username>')
 def getUserTimeLine(db, username):
-    pass
+    user_posts = query(db, '''SELECT * FROM posts 
+    WHERE username = ? 
+    ORDER BY posts.time DESC 
+    LIMIT 25''', [username])
+    if not user_posts:
+        abort(404)
+        
+    return {'user': [user_posts]}
 
