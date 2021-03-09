@@ -140,8 +140,6 @@ def addFollower(db, username, usernameToFollow):
     print(user, userToFollow)
     print(checkUser, checkUserToFollow)
 
-    if not required_fields <= posted_fields:
-        abort(400, f'Missing fields: {required_fields - posted_fields}')
 
     if(user == checkUser and userToFollow == checkUserToFollow):
         response.status = 400
