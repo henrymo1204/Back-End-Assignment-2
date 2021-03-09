@@ -1,4 +1,11 @@
 # Back-End-Assignment-2
+
+# How To Start
+```
+.bin/init.sh
+foreman start
+```
+
 # Users service
 
 RESOURCES: users
@@ -292,9 +299,3 @@ or
 	status: 409 Conflict
 	
 }
-
-# How To Start
-```
-.bin/init.sh
-foreman start
-```
