@@ -124,8 +124,16 @@ def addFollower(db, username, usernameToFollow):
         response.status = 400
         return { 'Status' : response.status, 'message' : 'Cannot follow self'}
     sql = "SELECT username, userToFollow FROM followers WHERE username=\'" + user + "\' and userToFollow=\'" + userToFollow + "\';"
-
     c = db.execute(sql).fetchone()
+    user1_sql = "SELECT username FROM users WHERE username=\'" + user  + "\';"
+    d = db.execute(user1_sql).fetchall()
+    user2_sql = "SELECT username FROM users WHERE username=\'" + userToFollow + "\';"
+    e = db.execute(user2_sql).fetchall()
+    print(e)
+    print(d)
+    if not d or not e:
+        response.status = 400
+        return { 'Status' : response.status, 'message' : 'User does not exist'}
     if not c:
         try:
             execute(db, '''INSERT INTO followers(username, userToFollow) VALUES (?, ?)''', (user, userToFollow))
@@ -140,9 +148,8 @@ def addFollower(db, username, usernameToFollow):
     print(user, userToFollow)
     print(checkUser, checkUserToFollow)
 
-
     if(user == checkUser and userToFollow == checkUserToFollow):
-        response.status = 400
+        response.status = 409
         return { 'Status' : response.status, 'message' : 'Already following'}
 
 @delete('/followers/<username>/<usernameToUnfollow>')
@@ -154,9 +161,18 @@ def removeFollower(db, username, usernameToUnfollow):
         return { 'Status' : response.status, 'message' : 'Cannot unfollow self'}
     sql = "SELECT username, userToFollow FROM followers WHERE username=\'" + user + "\' and userToFollow=\'" + userToRemove + "\';"
     c = db.execute(sql).fetchone()
+    user1_sql = "SELECT username FROM users WHERE username=\'" + user  + "\';"
+    d = db.execute(user1_sql).fetchall()
+    user2_sql = "SELECT username FROM users WHERE username=\'" + userToRemove + "\';"
+    e = db.execute(user2_sql).fetchall()
+    print(e)
+    print(d)
+    if not d or not e:
+        response.status = 400
+        return { 'Status' : response.status, 'message' : 'User does not exist'}
     if not c:
         response.status = 400
-        return { 'Status' : response.status, 'message' : 'User was never followed'}
+        return { 'Status' : response.status, 'message' : 'User was not followed'}
     else:
         execute(db, '''DELETE from followers where username=? and userToFollow=?''', (username, userToRemove))
         response.status = 200
